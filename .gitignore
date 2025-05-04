@@ -1,0 +1,10 @@
+# Log files
+*.log
+
+# Virtual environment
+venv/
+
+# IDE/Editor specific files (optional but good practice)
+.vscode/
+*.pyc
+__pycache__/
