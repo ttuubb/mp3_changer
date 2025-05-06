@@ -5,7 +5,7 @@ from mutagen.id3 import ID3, APIC, TPE1, TIT2
 import logging
 
 # --- 配置 ---
-TARGET_DIR = "/home/ttuubb/下载"
+TARGET_DIR = "/home/ttuubb/下载"  # 更改为绝对路径
 LOG_FILE = "modify_mp3.log"
 # --- 配置结束 ---
 
@@ -46,9 +46,16 @@ def process_mp3_file(filepath):
 
         first_artist_char = 'X' # 默认值
         if artist:
-            first_artist_char = artist[0]
+            if len(artist) > 0:
+                first_artist_char = artist[0]
+            else:
+                logging.warning(f"艺术家标签为空，将使用 'X' 代替: {os.path.basename(filepath)}")
         else:
             logging.warning(f"文件缺少艺术家标签，将使用 'X' 代替: {os.path.basename(filepath)}")
+
+        if not os.path.exists(filepath):
+            logging.error(f"文件不存在: {filepath}")
+            return
 
         # 2. 获取日期并构造新基本文件名
         today_date = datetime.datetime.now().strftime("%Y%m%d")
@@ -86,7 +93,7 @@ def process_mp3_file(filepath):
             os.rename(filepath, new_filepath)
             logging.info(f"文件已重命名: '{os.path.basename(filepath)}' -> '{new_filename}'")
         else:
-             logging.info(f"文件名无需更改: {os.path.basename(filepath)}")
+             pass # 删除不必要的日志信息
 
     except Exception as e:
         logging.error(f"处理文件时出错 '{os.path.basename(filepath)}': {e}", exc_info=True)
@@ -118,8 +125,7 @@ def main():
                 logging.warning(f"跳过，不是文件: {filename}")
                 skipped_count += 1
         else:
-            # logging.debug(f"跳过，非 MP3 文件: {filename}") # 如果需要可以取消注释
-            pass
+            logging.debug(f"跳过，非 MP3 文件: {filename}") # 如果需要可以取消注释
 
     logging.info("="*30)
     logging.info(f"处理完成。")
